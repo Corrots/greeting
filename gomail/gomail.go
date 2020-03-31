@@ -13,11 +13,11 @@ import (
 
 //
 type Configuration struct {
-	Host string
-	Port string
+	Host     string
+	Port     string
 	Username string
 	Password string
-	From string
+	From     string
 }
 
 var Config = Configuration{
@@ -29,10 +29,10 @@ var Config = Configuration{
 }
 
 type GoMail struct {
-	From string
-	To []string
-	Cc []string
-	Bcc []string
+	From    string
+	To      []string
+	Cc      []string
+	Bcc     []string
 	Subject string
 	Content string
 }

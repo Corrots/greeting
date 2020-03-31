@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	env "github.com/joho/godotenv"
-	"github.com/robfig/cron/v3"
 	"greeting/api"
 	"greeting/gomail"
 	"log"
@@ -13,6 +11,9 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	env "github.com/joho/godotenv"
+	"github.com/robfig/cron/v3"
 )
 
 // User for receive email
@@ -37,13 +38,13 @@ func main() {
 	}
 }
 
-func sendMail(content string, to string)  {
+func sendMail(content string, to string) {
 	gomail.Config.Username = os.Getenv("MAIL_USERNAME")
 	gomail.Config.Password = os.Getenv("MAIL_PASSWORD")
 	gomail.Config.Host = os.Getenv("MAIL_HOST")
 	gomail.Config.Port = os.Getenv("MAIL_PORT")
 	gomail.Config.From = os.Getenv("MAIL_FROM")
-	
+
 	email := gomail.GoMail{
 		To:      []string{to},
 		Subject: os.Getenv("MAIL_SUBJECT"),
@@ -55,19 +56,19 @@ func sendMail(content string, to string)  {
 }
 
 func getParts() map[string]interface{} {
-	wrapMap := map[string]func() interface{} {
-		"one": func() interface{} { return api.GetOne() },
-		"english": func() interface{} { return api.GetEnglish() },
-		"poem": func() interface{} { return api.GetPoem() },
+	wrapMap := map[string]func() interface{}{
+		"one":       func() interface{} { return api.GetOne() },
+		"english":   func() interface{} { return api.GetEnglish() },
+		"poem":      func() interface{} { return api.GetPoem() },
 		"wallpaper": func() interface{} { return api.GetWallpaper() },
-		"trivia": func() interface{} { return api.GetTrivia()},
+		"trivia":    func() interface{} { return api.GetTrivia() },
 	}
 
 	wg := sync.WaitGroup{}
 	parts := make(map[string]interface{})
 	for name, getPart := range wrapMap {
 		wg.Add(1)
-		go func(key string, fn func()interface{}) {
+		go func(key string, fn func() interface{}) {
 			defer wg.Done()
 			parts[key] = fn()
 		}(name, getPart)
@@ -76,7 +77,7 @@ func getParts() map[string]interface{} {
 	return parts
 }
 
-func bashSendMail()  {
+func bashSendMail() {
 	loadConfig()
 
 	users := getUsers()
@@ -112,10 +113,10 @@ func generateHTML(html string, datas map[string]interface{}) string {
 		rDataKey := reflect.TypeOf(data)
 		rDataVal := reflect.ValueOf(data)
 		fieldNum := rDataKey.NumField()
-		for i:= 0; i < fieldNum; i++ {
+		for i := 0; i < fieldNum; i++ {
 			fName := rDataKey.Field(i).Name
 			rValue := rDataVal.Field(i)
-			
+
 			var fValue string
 			switch rValue.Interface().(type) {
 			case string:
@@ -144,7 +145,7 @@ func isDev() bool {
 	return os.Getenv("MAIL_MODE") == "dev"
 }
 
-func loadConfig()  {
+func loadConfig() {
 	if err := env.Load(); err != nil {
 		log.Fatalf("Load .env file error: %s", err)
 	}

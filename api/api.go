@@ -82,7 +82,7 @@ func GetOne() One {
 		sentence = wrap.Find(".info_box>a>h2").Text()
 	}
 	date := wrap.Find(".info_box .fot_box .time_box").Children().Nodes[0].NextSibling.Data
-	imageUrl,exists := wrap.Find(".img_box img").Attr("src")
+	imageUrl, exists := wrap.Find(".img_box img").Attr("src")
 
 	return One{
 		Date:     date,
@@ -134,8 +134,8 @@ func GetWallpaper() Wallpaper {
 	imageUrl, _ := doc.Find("#bgLink").Attr("href")
 	title, _ := doc.Find("#sh_cp").Attr("title")
 	return Wallpaper{
-		ImgURL:  url + imageUrl,
-		Title: title,
+		ImgURL: url + imageUrl,
+		Title:  title,
 	}
 }
 
