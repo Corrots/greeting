@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"greeting/api"
 	"greeting/gomail"
+	"greeting/static"
 	"log"
 	"os"
 	"reflect"
@@ -23,6 +24,8 @@ type User struct {
 }
 
 func main() {
+	loadConfig()
+
 	location, _ := time.LoadLocation("Asia/Shanghai")
 	cJob := cron.New(cron.WithLocation(location))
 
@@ -61,7 +64,7 @@ func getParts() map[string]interface{} {
 		"english":   func() interface{} { return api.GetEnglish() },
 		"poem":      func() interface{} { return api.GetPoem() },
 		"wallpaper": func() interface{} { return api.GetWallpaper() },
-		"trivia":    func() interface{} { return api.GetTrivia() },
+		//"trivia":    func() interface{} { return api.GetTrivia() },
 	}
 
 	wg := sync.WaitGroup{}
@@ -78,8 +81,6 @@ func getParts() map[string]interface{} {
 }
 
 func bashSendMail() {
-	loadConfig()
-
 	users := getUsers()
 	if len(users) == 0 {
 		return
@@ -87,7 +88,7 @@ func bashSendMail() {
 	parts := getParts()
 	if isDev() {
 		parts["weather"] = api.GetWeather(users[0].Local)
-		html := generateHTML(HTML, parts)
+		html := generateHTML(static.HTML, parts)
 		fmt.Println(html)
 		return
 	}
@@ -100,7 +101,7 @@ func bashSendMail() {
 			defer wg.Done()
 			parts["weather"] = api.GetWeather(user.Local)
 			lock.Lock()
-			html := generateHTML(HTML, parts)
+			html := generateHTML(static.HTML, parts)
 			lock.Unlock()
 			sendMail(html, user.Email)
 		}(user)

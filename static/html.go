@@ -1,4 +1,4 @@
-package main
+package static
 
 // HTML for email template
 const HTML = `

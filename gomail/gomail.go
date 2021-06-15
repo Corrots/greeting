@@ -1,24 +1,15 @@
 package gomail
 
 import (
-	"bytes"
 	"crypto/md5"
 	"fmt"
 	"io"
 	"log"
 	"net/mail"
 	"net/smtp"
+	"strings"
 	"time"
 )
-
-//
-type Configuration struct {
-	Host     string
-	Port     string
-	Username string
-	Password string
-	From     string
-}
 
 var Config = Configuration{
 	Host:     "smtp.qq.com",
@@ -26,6 +17,15 @@ var Config = Configuration{
 	Username: "",
 	Password: "",
 	From:     "",
+}
+
+
+type Configuration struct {
+	Host     string
+	Port     string
+	Username string
+	Password string
+	From     string
 }
 
 type GoMail struct {
@@ -61,7 +61,7 @@ func (gm *GoMail) Send() error {
 }
 
 func (gm *GoMail) String() string {
-	var buf bytes.Buffer
+	var buf strings.Builder
 	const crlf = "\r\n"
 
 	write := func(what string, addrs []string) {
@@ -78,6 +78,8 @@ func (gm *GoMail) String() string {
 		}
 		buf.WriteString(crlf)
 	}
+
+	// 随机生成分割线
 	getBoundary := func() string {
 		h := md5.New()
 		io.WriteString(h, fmt.Sprintf("%d", time.Now().Nanosecond()))

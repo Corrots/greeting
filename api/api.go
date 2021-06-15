@@ -7,15 +7,21 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"io"
 	"log"
+	"net"
 	"net/http"
+	"time"
 )
 
 // Create a http client
 func createClient() *http.Client {
-	tr := &http.Transport{
+	transport := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		DialContext: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).DialContext,
 	}
-	return &http.Client{Transport: tr}
+	return &http.Client{Transport: transport}
 }
 
 func Fetch(url string) io.Reader {
